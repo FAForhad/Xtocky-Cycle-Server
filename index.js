@@ -45,6 +45,18 @@ async function run() {
             const result = await allProductsCollection.find(query).toArray();
             res.send(result)
         })
+
+        app.get('/allproducts/category', async (req, res) => {
+            let products = {};
+            if (req.query.categoryId) {
+                products = {
+                    categoryId: req.query.categoryId
+                }
+            }
+            const cursor = allProductsCollection.find(products).sort({ time: -1 });
+            const result = await cursor.toArray()
+            res.send(result);
+        })
     }
     finally {
 
