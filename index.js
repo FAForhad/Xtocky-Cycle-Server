@@ -18,8 +18,11 @@ async function run() {
 
     const categoriesCollection = client.db('XtockyCycle').collection('categories')
     const allProductsCollection = client.db('XtockyCycle').collection('AllProducts')
+    const usersCollection = client.db('XtockyCycle').collection('users')
 
     try {
+
+        // categories
         app.get('/categories', async (req, res) => {
             const query = {}
             const result = await categoriesCollection.find(query).limit(3).toArray()
@@ -57,6 +60,14 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result);
         })
+
+        // users
+        app.post('/users', async (req, res) => {
+            const query = req.body;
+            const result = await usersCollection.insertOne(query)
+            res.send(result);
+        })
+
     }
     finally {
 
