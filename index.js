@@ -96,12 +96,52 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/users/adimn/:email', async (req, res) => {
+        app.get('/users/:email', async (req, res) => {
             const email = req.params.email
             const query = { email }
             const result = await usersCollection.findOne(query)
             res.send(result)
         })
+
+        app.get('/allsellers', async (req, res) => {
+            let quary = {};
+            if (req.query.role === 'Seller') {
+                quary = {
+                    role: req.query.role
+                }
+            }
+            const result = await usersCollection.find(quary).toArray();
+            res.send(result);
+        })
+
+
+
+        app.delete('/allsellers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectID(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result)
+        })
+
+
+        app.get('/allbuyers', async (req, res) => {
+            let quary = {};
+            if (req.query.role === 'Buyer') {
+                quary = {
+                    role: req.query.role
+                }
+            }
+            const result = await usersCollection.find(quary).toArray();
+            res.send(result);
+        })
+
+        app.delete('/allbuyers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectID(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result)
+        })
+
 
         // booking
 
