@@ -70,7 +70,10 @@ async function run() {
         })
 
         app.get('/myproduct', async (req, res) => {
-
+            // const decoded = req.decoded;
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: ' unsuthorized action' })
+            // }
 
             let quary = {};
             if (req.query.email) {
@@ -81,6 +84,14 @@ async function run() {
             const result = await allProductsCollection.find(quary).toArray();
             res.send(result);
         })
+
+        app.delete('/myproduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectID(id) };
+            const result = await allProductsCollection.deleteOne(query);
+            res.send(result)
+        })
+
 
 
         // users
