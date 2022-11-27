@@ -19,6 +19,7 @@ async function run() {
     const categoriesCollection = client.db('XtockyCycle').collection('categories')
     const allProductsCollection = client.db('XtockyCycle').collection('AllProducts')
     const usersCollection = client.db('XtockyCycle').collection('users')
+    const bookingsCollection = client.db('XtockyCycle').collection('bookings')
 
     try {
 
@@ -70,11 +71,6 @@ async function run() {
         })
 
         app.get('/myproduct', async (req, res) => {
-            // const decoded = req.decoded;
-            // if (decoded.email !== req.query.email) {
-            //     res.status(403).send({ message: ' unsuthorized action' })
-            // }
-
             let quary = {};
             if (req.query.email) {
                 quary = {
@@ -93,7 +89,6 @@ async function run() {
         })
 
 
-
         // users
         app.post('/users', async (req, res) => {
             const query = req.body;
@@ -105,6 +100,33 @@ async function run() {
             const email = req.params.email
             const query = { email }
             const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+
+        // booking
+
+        app.post('/bookings', async (req, res) => {
+            const query = req.body;
+            const result = await bookingsCollection.insertOne(query);
+            res.send(result);
+        })
+
+
+        app.get('/mybookings', async (req, res) => {
+            let quary = {};
+            if (req.query.email) {
+                quary = {
+                    email: req.query.email
+                }
+            }
+            const result = await bookingsCollection.find(quary).toArray();
+            res.send(result);
+        })
+
+        app.delete('/mybookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectID(id) };
+            const result = await bookingsCollection.deleteOne(query);
             res.send(result)
         })
 
