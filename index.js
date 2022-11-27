@@ -42,6 +42,8 @@ async function run() {
             res.send(result)
         })
 
+
+
         // products
         app.get('/allproducts', async (req, res) => {
             const query = {}
@@ -66,6 +68,21 @@ async function run() {
             const result = await allProductsCollection.insertOne(product)
             res.send(result)
         })
+
+        app.get('/myproduct', async (req, res) => {
+
+
+            let quary = {};
+            if (req.query.email) {
+                quary = {
+                    email: req.query.email
+                }
+            }
+            const result = await allProductsCollection.find(quary).toArray();
+            res.send(result);
+        })
+
+
         // users
         app.post('/users', async (req, res) => {
             const query = req.body;
