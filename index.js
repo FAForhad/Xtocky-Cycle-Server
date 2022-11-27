@@ -143,6 +143,21 @@ async function run() {
         })
 
 
+        app.put('/verifyuser/:id', async (req, res) => {
+            const id = req.params.id;
+            const status = req.body.status
+            const query = { _id: ObjectID(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    isVerifyed: status
+                }
+            }
+            const result = await usersCollection.updateOne(query, updatedDoc, options);
+            res.send(result)
+
+        })
+
         // booking
 
         app.post('/bookings', async (req, res) => {
