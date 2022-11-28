@@ -61,7 +61,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/allcategories', async (req, res) => {
+        app.get('/allcategories', verifyjwt, async (req, res) => {
             const query = {}
             const result = await categoriesCollection.find(query).toArray()
             res.send(result)
@@ -77,7 +77,7 @@ async function run() {
 
 
         // products
-        app.get('/allproducts', async (req, res) => {
+        app.get('/allproducts', verifyjwt, async (req, res) => {
             const query = {}
             const result = await allProductsCollection.find(query).toArray();
             res.send(result)
@@ -95,13 +95,13 @@ async function run() {
             res.send(result);
         })
 
-        app.post('/allproducts', async (req, res) => {
+        app.post('/allproducts', verifyjwt, async (req, res) => {
             const product = req.body;
             const result = await allProductsCollection.insertOne(product)
             res.send(result)
         })
 
-        app.get('/myproduct', async (req, res) => {
+        app.get('/myproduct', verifyjwt, async (req, res) => {
             let quary = {};
             if (req.query.email) {
                 quary = {
@@ -152,7 +152,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/allsellers', async (req, res) => {
+        app.get('/allsellers', verifyjwt, async (req, res) => {
             let quary = {};
             if (req.query.role === 'Seller') {
                 quary = {
@@ -173,7 +173,7 @@ async function run() {
         })
 
 
-        app.get('/allbuyers', async (req, res) => {
+        app.get('/allbuyers', verifyjwt, async (req, res) => {
             let quary = {};
             if (req.query.role === 'Buyer') {
                 quary = {
@@ -217,17 +217,8 @@ async function run() {
 
 
         app.get('/mybookings', async (req, res) => {
-            // const email = req.query.email;
-            // const decodedEmail = req.decoded.email;
-            // if (email !== decodedEmail) {
-            //     return res.status(403).send('forbiden access')
-            // }
-            let quary = {};
-            if (email) {
-                quary = {
-                    email: req.query.email
-                }
-            }
+            const email = req.query.email;
+            const quary = { email }
             const result = await bookingsCollection.find(quary).toArray();
             res.send(result);
         })
