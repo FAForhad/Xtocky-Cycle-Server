@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 5000;
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
 app.use(cors())
 app.use(express.json())
@@ -14,6 +15,25 @@ const { ObjectID } = require('bson');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.c3txqlb.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+
+function verifyjwt(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+    const token = authHeader.split(' ')[1]
+    jwt.verify(token, process.env.JWT_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(401).send({ message: 'unauthorized access' })
+        }
+        req.decoded = decoded;
+        next()
+    })
+}
+
+
+
 async function run() {
 
     const categoriesCollection = client.db('XtockyCycle').collection('categories')
@@ -22,6 +42,17 @@ async function run() {
     const bookingsCollection = client.db('XtockyCycle').collection('bookings')
 
     try {
+
+        // JWT
+
+        app.post('/jwt', (req, res) => {
+            const user = req.body
+            console.log(user)
+            const Token = jwt.sign(user, process.env.JWT_TOKEN_SECRET)
+            res.send({ Token })
+        })
+
+
 
         // categories
         app.get('/categories', async (req, res) => {
@@ -93,6 +124,14 @@ async function run() {
         app.post('/users', async (req, res) => {
             const query = req.body;
             const result = await usersCollection.insertOne(query)
+            res.send(result);
+        })
+
+
+        app.get('/allusres', async (req, res) => {
+            const email = req.query.email
+            const query = { email }
+            const result = await usersCollection.find(query).toArray();
             res.send(result);
         })
 
@@ -168,8 +207,13 @@ async function run() {
 
 
         app.get('/mybookings', async (req, res) => {
+            // const email = req.query.email;
+            // const decodedEmail = req.decoded.email;
+            // if (email !== decodedEmail) {
+            //     return res.status(403).send('forbiden access')
+            // }
             let quary = {};
-            if (req.query.email) {
+            if (email) {
                 quary = {
                     email: req.query.email
                 }
